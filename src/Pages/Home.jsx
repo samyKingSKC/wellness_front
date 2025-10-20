@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router";
-import { business } from "../config/business";
+import business  from "../config/business";
 import Navbar from "../Components/Navbar";
 import Footer from "../Components/Footer";
 import DemoAlert from "../Components/DemoAlert";

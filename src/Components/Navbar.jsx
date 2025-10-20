@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { business } from "../config/business";
+import business from "../config/business";
 import { FaBars, FaTimes } from "react-icons/fa";
 import { Link } from "react-router";
 

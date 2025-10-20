@@ -1,5 +1,5 @@
 import React from "react";
-import { business } from "../config/business";
+import  business  from "../config/business";
 import { FaFacebookF, FaInstagram, FaTwitter, FaEnvelope, FaPhone } from "react-icons/fa";
 
 export default function Footer() {

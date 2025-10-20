@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { business } from "../config/business";
+import business from "../config/business";
 import { FaLeaf, FaCalendarAlt, FaSpa } from "react-icons/fa";
 import Navbar from "../Components/Navbar";
 import Footer from "../Components/Footer";

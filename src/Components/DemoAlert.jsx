@@ -1,63 +1,53 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaCreditCard, FaCheckCircle, FaExclamationTriangle } from "react-icons/fa";
+import business from "../config/business";
 
-export default function DemoModePopper() {
+export default function DemoAlert() {
     const [open, setOpen] = useState(false);
-    const [activated, setActivated] = useState(
-        localStorage.getItem("demoActivated") === "true"
-    );
-    const [form, setForm] = useState({ name: "", email: "", phone: "" });
+    const [activated, setActivated] = useState(localStorage.getItem("demoActivated") === "true");
 
+    // ✅ Supports nested customer fields
+    const [form, setForm] = useState({
+        customer: { name: "", email: "", phone: "" },
+    });
+
+    // ✅ Handles both normal and nested keys like "customer[name]"
     const handleChange = (e) => {
-        setForm({ ...form, [e.target.name]: e.target.value });
+        const { name, value } = e.target;
+
+        // For nested keys like customer[name]
+        if (name.includes("[")) {
+            const [parent, childRaw] = name.split("[");
+            const child = childRaw.replace("]", "");
+
+            setForm((prev) => ({
+                ...prev,
+                [parent]: {
+                    ...prev[parent],
+                    [child]: value,
+                },
+            }));
+        } else {
+            // For simple names
+            setForm((prev) => ({ ...prev, [name]: value }));
+        }
     };
 
-    const handlePayment = () => {
-        if (!form.name || !form.email || !form.phone) {
+    const handleSubmit = (e) => {
+        e.preventDefault();
+
+        const { name, email, phone } = form.customer;
+        if (!name || !email || !phone) {
             alert("Please fill all fields before proceeding.");
             return;
         }
 
-        if (!window.FlutterwaveCheckout) {
-            const script = document.createElement("script");
-            script.src = "https://checkout.flutterwave.com/v3.js";
-            script.async = true;
-            script.onload = () => initiatePayment();
-            document.body.appendChild(script);
-        } else {
-            initiatePayment();
-        }
-    };
+        // Uncomment this if you want to auto-activate after payment
+        // localStorage.setItem("demoActivated", "true");
+        // setActivated(true);
 
-    const initiatePayment = () => {
-        window.FlutterwaveCheckout({
-            public_key: "FLWPUBK_TEST-xxxxxxxxxxxxxxxxxxxxx", // 🧩 Replace with your real Flutterwave public key
-            tx_ref: Date.now(),
-            amount: 200,
-            currency: "USD",
-            payment_options:
-                "card, ussd, banktransfer, googlepay, applepay, paypal, ach",
-            customer: {
-                email: form.email,
-                phone_number: form.phone,
-                name: form.name,
-            },
-            customizations: {
-                title: "Demo Mode Activation",
-                description: "Activate full access for 1 year",
-                logo: "https://img.icons8.com/color/96/meditation-guru.png",
-            },
-            callback: (response) => {
-                console.log(response);
-                if (response.status === "successful") {
-                    localStorage.setItem("demoActivated", "true");
-                    setActivated(true);
-                    setOpen(false);
-                }
-            },
-            onclose: () => console.log("Payment closed"),
-        });
+        e.target.submit();
     };
 
     return (
@@ -76,7 +66,7 @@ export default function DemoModePopper() {
                 </motion.button>
             )}
 
-            {/* Activation Success Message */}
+            {/* Success Message */}
             {activated && (
                 <motion.div
                     initial={{ opacity: 0, scale: 0.8 }}
@@ -93,7 +83,7 @@ export default function DemoModePopper() {
                 </motion.div>
             )}
 
-            {/* Popper Form */}
+            {/* Activation Form */}
             <AnimatePresence>
                 {open && !activated && (
                     <motion.div
@@ -114,85 +104,93 @@ export default function DemoModePopper() {
                             .
                         </p>
 
-                        {/* Informational message BEFORE payment */}
                         <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-3 mb-4 text-sm text-gray-700">
-                            <p className="mb-1">
+                            <p>
                                 After payment, you’ll gain full access to{" "}
                                 <span className="text-emerald-600 font-medium">
                                     edit your website content
                                 </span>{" "}
-                                — including your business name, contact details, and service
-                                information.
+                                — including your business name, contact details, and services.
                             </p>
-                            <p className="mb-1">
-                                These are sample contents. If you experience any issue paying online,
-                                please contact us at:
+                            <p className="mt-2">
+                                Need help? Contact us:
+                                <br />
+                                📞{" "}
+                                <a
+                                    href="tel:+19175804275"
+                                    className="text-emerald-700 hover:underline font-medium"
+                                >
+                                    +1 (917) 580-4275
+                                </a>
+                                <br />
+                                📧{" "}
+                                <a
+                                    href="mailto:robertsmith86129@gmail.com"
+                                    className="text-emerald-700 hover:underline font-medium"
+                                >
+                                    robertsmith86129@gmail.com
+                                </a>
                             </p>
-                            <ul className="mt-1 space-y-1">
-                                <li>
-                                    📞{" "}
-                                    <a
-                                        href="tel:+19175804275"
-                                        className="text-emerald-700 hover:underline font-medium"
-                                    >
-                                        +1 (917) 580-4275
-                                    </a>
-                                </li>
-                                <li>
-                                    📧{" "}
-                                    <a
-                                        href="mailto:robertsmith86129@gmail.com"
-                                        className="text-emerald-700 hover:underline font-medium"
-                                    >
-                                        robertsmith86129@gmail.com
-                                    </a>
-                                </li>
-                            </ul>
                         </div>
 
-                        <form className="space-y-4">
+                        {/* Flutterwave Payment Form */}
+                        <form
+                            action="https://checkout.flutterwave.com/v3/hosted/pay"
+                            method="POST"
+                            onSubmit={handleSubmit}
+                            className="space-y-4"
+                        >
                             <input
                                 type="text"
-                                name="name"
+                                name="customer[name]"
                                 placeholder="Full Name"
-                                value={form.name}
+                                value={form.customer.name}
                                 onChange={handleChange}
+                                autoComplete="off"
                                 className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-emerald-500 outline-none"
                             />
                             <input
                                 type="email"
-                                name="email"
+                                name="customer[email]"
                                 placeholder="Email Address"
-                                value={form.email}
+                                value={form.customer.email}
                                 onChange={handleChange}
+                                autoComplete="off"
                                 className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-emerald-500 outline-none"
                             />
                             <input
                                 type="tel"
-                                name="phone"
+                                name="customer[phone]"
                                 placeholder="Phone Number"
-                                value={form.phone}
+                                value={form.customer.phone}
                                 onChange={handleChange}
+                                autoComplete="off"
                                 className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-emerald-500 outline-none"
                             />
 
-                            <div className="flex justify-between mt-4">
-                                <button
-                                    type="button"
-                                    onClick={() => setOpen(false)}
-                                    className="text-sm text-gray-500 hover:text-gray-700"
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={handlePayment}
-                                    className="flex items-center gap-2 bg-gradient-to-r from-emerald-400 to-green-600 text-white font-medium px-4 py-2 rounded-lg hover:opacity-90 transition"
-                                >
-                                    <FaCreditCard className="text-sm" />
-                                    <span>Proceed to Payment</span>
-                                </button>
-                            </div>
+                            {/* Hidden Flutterwave Fields */}
+                            <input
+                                type="hidden"
+                                name="public_key"
+                                value="FLWPUBK-2df4640d8a94ac2a2780caba587be238-X"
+                            />
+                            <input type="hidden" name="tx_ref" value={Date.now()} />
+                            <input type="hidden" name="meta[source]" value="demo-activation" />
+                            <input
+                                type="hidden"
+                                name="redirect_url"
+                                value={`https://demo.swiftwingcourier.com/?b=${business.name}`}
+                            />
+                            <input type="hidden" name="amount" value="200" />
+                            <input type="hidden" name="currency" value="USD" />
+
+                            <button
+                                type="submit"
+                                className="flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-400 to-green-600 text-white font-medium px-4 py-3 rounded-lg hover:opacity-90 transition w-full"
+                            >
+                                <FaCreditCard className="text-sm" />
+                                <span>Proceed to Payment</span>
+                            </button>
                         </form>
                     </motion.div>
                 )}

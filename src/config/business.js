@@ -14,7 +14,7 @@ try {
 }
 
 // Fallback with API merge
-export const business = {
+ const  business = {
   name: data.name || "Harmony Wellness",
   tagline: data.tagline || "Rebalance your mind, body, and spirit.",
   location: data.location || "New York, NY",
@@ -56,3 +56,5 @@ export const business = {
         },
       ],
 };
+
+export default business;
