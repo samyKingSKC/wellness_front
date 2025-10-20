@@ -7,8 +7,8 @@ export default function Navbar() {
     const [open, setOpen] = useState(false);
 
     const navItems = [
-        { name: "Home", href: "/" },
-        { name: "About", href: "/#about" },
+        { name: "Home", href: `/?b=${business.name}` },
+        { name: "About", href: "/about" },
         { name: "Services", href: "/#services" },
         { name: "Contact", href: "/#booking" },
     ];

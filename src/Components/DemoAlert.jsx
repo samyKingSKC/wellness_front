@@ -1,52 +1,67 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaCreditCard, FaCheckCircle, FaExclamationTriangle } from "react-icons/fa";
+import { FaCreditCard, FaCheckCircle, FaExclamationTriangle, FaTimes } from "react-icons/fa";
 import business from "../config/business";
 
 export default function DemoAlert() {
     const [open, setOpen] = useState(false);
     const [activated, setActivated] = useState(localStorage.getItem("demoActivated") === "true");
+    const formRef = useRef(null);
 
-    // ✅ Supports nested customer fields
+    // ✅ Form state
     const [form, setForm] = useState({
         customer: { name: "", email: "", phone: "" },
     });
 
-    // ✅ Handles both normal and nested keys like "customer[name]"
+    // ✅ Detect click outside
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (formRef.current && !formRef.current.contains(event.target)) {
+                setOpen(false);
+            }
+        };
+        if (open) {
+            document.addEventListener("mousedown", handleClickOutside);
+        } else {
+            document.removeEventListener("mousedown", handleClickOutside);
+        }
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, [open]);
+
+    // ✅ Handle mobile auto-close on activation
+    useEffect(() => {
+        if (activated) {
+            const timeout = setTimeout(() => setOpen(false), 2000);
+            return () => clearTimeout(timeout);
+        }
+    }, [activated]);
+
+    // ✅ Handle input updates
     const handleChange = (e) => {
         const { name, value } = e.target;
-
-        // For nested keys like customer[name]
         if (name.includes("[")) {
             const [parent, childRaw] = name.split("[");
             const child = childRaw.replace("]", "");
-
             setForm((prev) => ({
                 ...prev,
-                [parent]: {
-                    ...prev[parent],
-                    [child]: value,
-                },
+                [parent]: { ...prev[parent], [child]: value },
             }));
         } else {
-            // For simple names
             setForm((prev) => ({ ...prev, [name]: value }));
         }
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-
         const { name, email, phone } = form.customer;
         if (!name || !email || !phone) {
             alert("Please fill all fields before proceeding.");
             return;
         }
 
-        // Uncomment this if you want to auto-activate after payment
-        // localStorage.setItem("demoActivated", "true");
-        // setActivated(true);
-
+        // Save activation status locally after redirect (mock/demo)
+        localStorage.setItem("demoActivated", "true");
+        setActivated(true);
         e.target.submit();
     };
 
@@ -87,12 +102,21 @@ export default function DemoAlert() {
             <AnimatePresence>
                 {open && !activated && (
                     <motion.div
+                        ref={formRef}
                         initial={{ opacity: 0, y: 40 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 40 }}
                         transition={{ duration: 0.3 }}
-                        className="bg-white border border-emerald-400 shadow-2xl rounded-2xl px-6 py-5 w-80 md:w-96"
+                        className="relative bg-white border border-emerald-400 shadow-2xl rounded-2xl px-6 py-5 w-80 md:w-96"
                     >
+                        {/* Close Button */}
+                        <button
+                            className="absolute top-3 right-3 text-gray-400 hover:text-gray-600"
+                            onClick={() => setOpen(false)}
+                        >
+                            <FaTimes />
+                        </button>
+
                         <h3 className="text-lg font-semibold text-gray-800 mb-3">
                             Activate Demo Mode
                         </h3>

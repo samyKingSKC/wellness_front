@@ -80,7 +80,7 @@ export default function Home() {
                                     href="#booking"
                                     className="bg-emerald-500 hover:bg-emerald-600 text-white font-semibold px-6 py-3 rounded-full shadow-md transition"
                                 >
-                                    Book a Free Consultation
+                                    Book a Consultation
                                 </a>
                             </div>
                         </div>
@@ -138,7 +138,7 @@ export default function Home() {
                                     personalized sessions to help you heal, grow, and thrive.
                                 </p>
                                 <a
-                                    href="#booking"
+                                    href="/about"
                                     className="bg-emerald-500 text-white px-6 py-3 rounded-md shadow hover:bg-emerald-600 transition"
                                 >
                                     Learn More
