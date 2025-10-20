@@ -114,7 +114,7 @@ export default function DemoModePopper() {
                             .
                         </p>
 
-                        {/* Informational message (BEFORE payment) */}
+                        {/* Informational message BEFORE payment */}
                         <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-3 mb-4 text-sm text-gray-700">
                             <p className="mb-1">
                                 After payment, you’ll gain full access to{" "}
@@ -124,12 +124,30 @@ export default function DemoModePopper() {
                                 — including your business name, contact details, and service
                                 information.
                             </p>
-                            <p>
-                                These are sample contents. If you have issues paying online,
-                                text{" "}
-                                <b className="text-emerald-700">+1&nbsp;(917)&nbsp;580-4275</b>{" "}
-                                for assistance.
+                            <p className="mb-1">
+                                These are sample contents. If you experience any issue paying online,
+                                please contact us at:
                             </p>
+                            <ul className="mt-1 space-y-1">
+                                <li>
+                                    📞{" "}
+                                    <a
+                                        href="tel:+19175804275"
+                                        className="text-emerald-700 hover:underline font-medium"
+                                    >
+                                        +1 (917) 580-4275
+                                    </a>
+                                </li>
+                                <li>
+                                    📧{" "}
+                                    <a
+                                        href="mailto:robertsmith86129@gmail.com"
+                                        className="text-emerald-700 hover:underline font-medium"
+                                    >
+                                        robertsmith86129@gmail.com
+                                    </a>
+                                </li>
+                            </ul>
                         </div>
 
                         <form className="space-y-4">
