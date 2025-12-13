@@ -17,8 +17,9 @@ export default function Home() {
         const normalizedBusiness = business.name.trim().toLowerCase();
 
         if (!b || normalizedParam !== normalizedBusiness) {
-            setIsValidBusiness(false);
-        } else {
+            setIsValidBusiness(true);
+/*             setIsValidBusiness(false);
+ */        } else {
             setIsValidBusiness(true);
         }
     }, [searchParams]);
@@ -164,8 +165,8 @@ export default function Home() {
                         </a>
                     </section>
 
-                    <DemoAlert />
-                </>
+{/*                   <DemoAlert />
+ */}                </>
             )}
 
             <Footer />
